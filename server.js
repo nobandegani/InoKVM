@@ -29,6 +29,6 @@ wss.on("connection", (ws) => {
     });
 });
 
-server.listen(8080, () => {
-    console.log("Server listening at http://localhost:8080");
+server.listen(3658, () => {
+    console.log("Server listening at http://localhost:3658");
 });
