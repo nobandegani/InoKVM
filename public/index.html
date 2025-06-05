@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Key Sender</title>
+</head>
+<body>
+<h2>Press any key in the input box:</h2>
+<input type="text" id="inputBox" autofocus />
+
+<script>
+    const ws = new WebSocket("ws://" + location.host);
+
+    ws.onopen = () => console.log("Connected to server");
+    ws.onmessage = (msg) => console.log("Received:", msg.data);
+
+    const input = document.getElementById("inputBox");
+
+    input.addEventListener("keydown", (e) => {
+        e.preventDefault(); // ⛔ Stop default browser behavior (like F5 reload)
+
+        if (ws.readyState === WebSocket.OPEN) {
+            ws.send(e.key); // 🔑 Send actual key name like "F5"
+        }
+    });
+</script>
+
+</body>
+</html>
