@@ -1,0 +1,91 @@
+body {
+    background-color: #111;
+    color: #f0f0f0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 {
+    color: #00bfff;
+    font-size: 2.5em;
+    margin-bottom: 30px;
+}
+
+.camera-feed {
+    width: 90%;
+    height: 200px;
+    background-color: #222;
+    border: 2px dashed #444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    font-size: 1.2em;
+    margin-bottom: 40px;
+}
+
+.main-container {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    width: 90%;
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    min-width: 250px;
+}
+
+.controls h2 {
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.controls input[type="text"],
+.controls input[type="number"] {
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    background-color: #222;
+    color: #f0f0f0;
+}
+
+.controls input[type="checkbox"] {
+    transform: scale(1.2);
+    margin-right: 8px;
+}
+
+.controls label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ccc;
+    font-size: 0.95em;
+}
+
+.touchpad-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.touchpad-container h2 {
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+#touchpad {
+    width: 400px;
+    height: 300px;
+    border: 2px solid #555;
+    background-color: #1c1c1c;
+    touch-action: none;
+}
