@@ -75,49 +75,36 @@
     });
 
     let lastX = null, lastY = null;
+    let mouseDown = false;
 
-    function sendMouseDelta(dx, dy) {
+    pad.addEventListener("pointerdown", (e) => {
+        lastX = e.clientX;
+        lastY = e.clientY;
+        mouseDown = true;
+    });
+
+    pad.addEventListener("pointerup", () => {
+        mouseDown = false;
+        lastX = null;
+        lastY = null;
+    });
+
+    pad.addEventListener("pointermove", (e) => {
+        if (!mouseDown) return;
+
         const sensitivity = parseFloat(sensitivityInput.value) || 1;
-        dx = Math.round(dx * sensitivity);
-        dy = Math.round(dy * sensitivity);
+        const dx = (e.clientX - lastX) * sensitivity;
+        const dy = (e.clientY - lastY) * sensitivity;
 
-        if (dx === 0 && dy === 0) return;
-
-        if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ mouse: { dx, dy } }));
-        }
-    }
-
-    pad.addEventListener("mousedown", (e) => {
         lastX = e.clientX;
         lastY = e.clientY;
 
-        const moveHandler = (e) => {
-            sendMouseDelta(e.clientX - lastX, e.clientY - lastY);
-            lastX = e.clientX;
-            lastY = e.clientY;
-        };
-
-        const upHandler = () => {
-            document.removeEventListener("mousemove", moveHandler);
-            document.removeEventListener("mouseup", upHandler);
-        };
-
-        document.addEventListener("mousemove", moveHandler);
-        document.addEventListener("mouseup", upHandler);
-    });
-
-    pad.addEventListener("touchstart", (e) => {
-        const touch = e.touches[0];
-        lastX = touch.clientX;
-        lastY = touch.clientY;
-    });
-
-    pad.addEventListener("touchmove", (e) => {
-        const touch = e.touches[0];
-        sendMouseDelta(touch.clientX - lastX, touch.clientY - lastY);
-        lastX = touch.clientX;
-        lastY = touch.clientY;
+        // Send as float, or round if ESP-side requires integer
+        if (Math.abs(dx) > 0.01 || Math.abs(dy) > 0.01) {
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ mouse: { dx: dx.toFixed(2), dy: dy.toFixed(2) } }));
+            }
+        }
     });
 </script>
 
