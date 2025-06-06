@@ -51,6 +51,7 @@
 
         if (ws.readyState === WebSocket.OPEN) {
             let keys = [];
+            console.log(e.key);
             if (e.ctrlKey) keys.push("CONTROL");
             if (e.altKey) keys.push("ALT");
             if (e.shiftKey) keys.push("SHIFT");
