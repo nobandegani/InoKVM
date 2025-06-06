@@ -13,14 +13,36 @@ app.use(express.static(path.join(__dirname, "public")));
 wss.on("connection", (ws) => {
     console.log("Client connected");
 
-    ws.on("message", (message) => {
-        const msg = message.toString(); // 🔥 decode buffer to string
-        console.log("Received:", msg);
+    ws.on("message", (raw) => {
+        console.log("Raw:", raw);
+        const data = raw.toString();
+        console.log("Data:", data);
 
-        // Broadcast message to all other connected clients
+        // 🔍 Check if it's valid JSON
+        let isJSON = true;
+        let parsed;
+        try {
+            parsed = JSON.parse(data);
+        } catch (err) {
+            isJSON = false;
+        }
+
+        if (isJSON) {
+            console.log("✅ Valid JSON");
+            // You can access parsed.name, parsed.key, etc.
+        } else {
+            console.log("❌ Not a valid JSON");
+        }
+
+        // 🔁 Broadcast to other clients
         wss.clients.forEach((client) => {
             if (client !== ws && client.readyState === WebSocket.OPEN) {
-                client.send(message);
+                if (isJSON) {
+                    client.send(data);
+                }else{
+                    client.send(raw);
+                }
+
             }
         });
     });

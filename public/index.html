@@ -7,20 +7,39 @@
 <h2>Press any key in the input box:</h2>
 <input type="text" id="inputBox" autofocus />
 
+<br><br>
+
+<label>
+    <input type="checkbox" id="randomMouseCheckbox" />
+    Random Mouse Movements
+</label>
+
 <script>
     const protocol = location.protocol === "https:" ? "wss://" : "ws://";
     const ws = new WebSocket(protocol + location.host);
 
-    ws.onopen = () => console.log("Connected to server");
-    ws.onmessage = (msg) => console.log("Received:", msg.data);
+    ws.onopen = () => console.log("✅ Connected to server");
+    ws.onmessage = (msg) => console.log("📥 Received:", msg.data);
 
     const input = document.getElementById("inputBox");
+    const checkbox = document.getElementById("randomMouseCheckbox");
 
     input.addEventListener("keydown", (e) => {
-        e.preventDefault(); // ⛔ Stop default browser behavior (like F5 reload)
-
+        e.preventDefault(); // 🔒 Prevent default like F5 refresh
         if (ws.readyState === WebSocket.OPEN) {
-            ws.send(e.key); // 🔑 Send actual key name like "F5"
+            const payload = {
+                key: e.key
+            };
+            ws.send(JSON.stringify(payload));
+        }
+    });
+
+    checkbox.addEventListener("change", () => {
+        if (ws.readyState === WebSocket.OPEN) {
+            const payload = {
+                random_mouse: checkbox.checked
+            };
+            ws.send(JSON.stringify(payload));
         }
     });
 </script>
