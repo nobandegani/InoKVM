@@ -2,8 +2,18 @@
 <html>
 <head>
     <title>Key Sender</title>
+    <style>
+        #touchpad {
+            width: 300px;
+            height: 200px;
+            border: 2px solid black;
+            margin-top: 10px;
+            touch-action: none;
+        }
+    </style>
 </head>
 <body>
+
 <h2>Press any key in the input box:</h2>
 <input type="text" id="inputBox" autofocus />
 
@@ -14,6 +24,16 @@
     Random Mouse Movements
 </label>
 
+<br><br>
+
+<label>
+    Sensitivity:
+    <input type="number" id="sensitivity" value="1" step="0.1" min="0.1" />
+</label>
+
+<h2>Touchpad Area:</h2>
+<div id="touchpad"></div>
+
 <script>
     const protocol = location.protocol === "https:" ? "wss://" : "ws://";
     const ws = new WebSocket(protocol + location.host);
@@ -23,41 +43,80 @@
 
     const input = document.getElementById("inputBox");
     const checkbox = document.getElementById("randomMouseCheckbox");
+    const pad = document.getElementById("touchpad");
+    const sensitivityInput = document.getElementById("sensitivity");
 
     input.addEventListener("keyup", (e) => {
-        e.preventDefault(); // prevent default behavior
+        e.preventDefault();
 
         if (ws.readyState === WebSocket.OPEN) {
             let keys = [];
-            console.log(e.key.toUpperCase());
             if (e.ctrlKey) keys.push("CONTROL");
             if (e.altKey) keys.push("ALT");
             if (e.shiftKey) keys.push("SHIFT");
-            if (e.metaKey) keys.push("META"); // ⌘ on Mac or Win on Windows
+            if (e.metaKey) keys.push("META");
 
-            const key = e.key.toUpperCase();
-
-            // Ignore if it's just the modifier
+            const key = e.key;
             if (!["CONTROL", "ALT", "SHIFT", "META"].includes(key)) {
                 keys.push(key);
             }
 
             if (keys.length > 0) {
-                const payload = {
-                    keys: keys
-                };
-                ws.send(JSON.stringify(payload));
+                ws.send(JSON.stringify({ keys }));
             }
         }
     });
 
     checkbox.addEventListener("change", () => {
         if (ws.readyState === WebSocket.OPEN) {
-            const payload = {
-                random_mouse: checkbox.checked
-            };
-            ws.send(JSON.stringify(payload));
+            ws.send(JSON.stringify({ random_mouse: checkbox.checked }));
         }
+    });
+
+    let lastX = null, lastY = null;
+
+    function sendMouseDelta(dx, dy) {
+        const sensitivity = parseFloat(sensitivityInput.value) || 1;
+        dx = Math.round(dx * sensitivity);
+        dy = Math.round(dy * sensitivity);
+
+        if (dx === 0 && dy === 0) return;
+
+        if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ mouse: { dx, dy } }));
+        }
+    }
+
+    pad.addEventListener("mousedown", (e) => {
+        lastX = e.clientX;
+        lastY = e.clientY;
+
+        const moveHandler = (e) => {
+            sendMouseDelta(e.clientX - lastX, e.clientY - lastY);
+            lastX = e.clientX;
+            lastY = e.clientY;
+        };
+
+        const upHandler = () => {
+            document.removeEventListener("mousemove", moveHandler);
+            document.removeEventListener("mouseup", upHandler);
+        };
+
+        document.addEventListener("mousemove", moveHandler);
+        document.addEventListener("mouseup", upHandler);
+    });
+
+    pad.addEventListener("touchstart", (e) => {
+        const touch = e.touches[0];
+        lastX = touch.clientX;
+        lastY = touch.clientY;
+    });
+
+    pad.addEventListener("touchmove", (e) => {
+        const touch = e.touches[0];
+        sendMouseDelta(touch.clientX - lastX, touch.clientY - lastY);
+        lastX = touch.clientX;
+        lastY = touch.clientY;
     });
 </script>
 
