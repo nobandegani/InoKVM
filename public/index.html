@@ -102,7 +102,7 @@
         // Send as float, or round if ESP-side requires integer
         if (Math.abs(dx) > 0.01 || Math.abs(dy) > 0.01) {
             if (ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({ mouse: { dx: Math.round(dx), dy: Math.round(dy) } }));
+                ws.send(JSON.stringify({ mouse: { dx: 55, dy: 66 } }));
             }
         }
     });
