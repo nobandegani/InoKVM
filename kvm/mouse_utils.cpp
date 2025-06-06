@@ -12,7 +12,10 @@ void MouseUtils::loop(){
 }
 
 void MouseUtils::move(int8_t InX, int8_t InY) { 
-	Serial.println("Mouse moved: %d,%d\r\n", InX, InY);
+	Serial.print("Mouse moved: ");
+	Serial.print(InX);
+	Serial.print(",");
+	Serial.println(InY);
 	Mouse.move(InX, InY);
 }
 
@@ -50,7 +53,7 @@ void MouseUtils::move2(int8_t InX, int8_t InY) {
 
 		if (prev_x || prev_y) {
 			Mouse.move(diff_x, diff_y);
-			delay(my_delay);
+			delay(m_delay);
 		}
 
 		// Store the x,y coordinates for next time
@@ -61,7 +64,7 @@ void MouseUtils::move2(int8_t InX, int8_t InY) {
 	if (left) { x_dest *= -1; }
 	if (up)   { y_dest *= -1; }
 
-	Serial.println("Mouse moved: %d,%d\r\n", x_dest, y_dest);
+	//Serial.println("Mouse moved: %d,%d\r\n", x_dest, y_dest);
 
 	return;
 }

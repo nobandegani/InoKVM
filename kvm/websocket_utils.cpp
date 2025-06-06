@@ -100,9 +100,21 @@ void WebsocketUtils::solve_json_command(String payload){
 	j_key = "random_mouse";
 	if (payload_json.hasOwnProperty(j_key)) {
 		bool j_return = (bool) payload_json[j_key];
-		Serial.print("json is random mouse:");
+		Serial.print("Json is random mouse:");
 		Serial.println(j_return);
 		mUtils->random_move = j_return;
+  }
+
+  j_key = "mouse";
+	if (payload_json.hasOwnProperty(j_key)) {
+		int dx = (int) payload_json[j_key]["dx"];
+    int dy = (int) payload_json[j_key]["dy"];
+		
+		Serial.print("Json is mouse move:");
+    Serial.print(dx);
+    Serial.print(",");
+    Serial.println(dy);
+    mUtils->move(dx, dy);
   }
 
 	j_key = "keys";
