@@ -24,13 +24,30 @@
     const input = document.getElementById("inputBox");
     const checkbox = document.getElementById("randomMouseCheckbox");
 
-    input.addEventListener("keydown", (e) => {
-        e.preventDefault(); // 🔒 Prevent default like F5 refresh
+    input.addEventListener("keyup", (e) => {
+        e.preventDefault(); // prevent default behavior
+
         if (ws.readyState === WebSocket.OPEN) {
-            const payload = {
-                key: e.key
-            };
-            ws.send(JSON.stringify(payload));
+            let keys = [];
+            console.log(e.key.toUpperCase());
+            if (e.ctrlKey) keys.push("CONTROL");
+            if (e.altKey) keys.push("ALT");
+            if (e.shiftKey) keys.push("SHIFT");
+            if (e.metaKey) keys.push("META"); // ⌘ on Mac or Win on Windows
+
+            const key = e.key.toUpperCase();
+
+            // Ignore if it's just the modifier
+            if (!["CONTROL", "ALT", "SHIFT", "META"].includes(key)) {
+                keys.push(key);
+            }
+
+            if (keys.length > 0) {
+                const payload = {
+                    keys: keys
+                };
+                ws.send(JSON.stringify(payload));
+            }
         }
     });
 
