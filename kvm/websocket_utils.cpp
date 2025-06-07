@@ -75,13 +75,15 @@ void  WebsocketUtils::setConf(
 void WebsocketUtils::loop(){
   update();
 
-  if (cameraInterval == 0){
-    //SendCameraFeed();
-  }else{
-    unsigned long now = millis();
-    if (now - lastCameraSendTime >= cameraInterval) {
-      lastCameraSendTime = now;
-      //SendCameraFeed();
+  if (cameraActive){
+    if (cameraInterval == 0){
+      SendCameraFeed();
+    }else{
+      unsigned long now = millis();
+      if (now - lastCameraSendTime >= cameraInterval) {
+        lastCameraSendTime = now;
+        SendCameraFeed();
+      }
     }
   }
 }
@@ -142,6 +144,14 @@ void WebsocketUtils::solve_json_command(String payload){
 	if (JSON.typeof(payload_json) == "undefined") {
     Serial.println("WS payload json is invalid!");
     return;
+  }
+
+  j_key = "camera_active";
+	if (payload_json.hasOwnProperty(j_key)) {
+		bool j_return = (bool) payload_json[j_key];
+		Serial.print("Json is camera active:");
+		Serial.println(j_return);
+		cameraActive = j_return;
   }
 
 	j_key = "random_mouse";

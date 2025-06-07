@@ -30,6 +30,8 @@ class WebsocketUtils {
     CameraUtils* cUtils = nullptr;
 
     unsigned long lastCameraSendTime = 0;
+
+    bool cameraActive = false;
     unsigned int cameraInterval = 1000;
   
   public:

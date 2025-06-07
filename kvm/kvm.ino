@@ -38,7 +38,7 @@ void setup() {
   delay(delays);
 
 	// --------------- websocket utils ---------------
-	wsUtils.setConf(1000, 50);
+	wsUtils.setConf(1000, 0);
 	wsUtils.setRef(kUtils, mUtils, cUtils);
 	wsUtils.setWifi("Inoland2", "wGfzTV053GM4V");
 	delay(delays);

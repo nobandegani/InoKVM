@@ -20,8 +20,6 @@ void CameraUtils::setup(uint32_t InDelay){
 }
 
 void CameraUtils::loop(){
-  
-
   //delay(delays);
 }
 
