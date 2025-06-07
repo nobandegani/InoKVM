@@ -1,9 +1,29 @@
 const protocol = location.protocol === "https:" ? "wss://" : "ws://";
 const ws = new WebSocket(protocol + location.host);
 
-ws.onopen = () => console.log("✅ Connected to server");
-ws.onmessage = (msg) => console.log("📥 Received:", msg.data);
+ws.binaryType = "arraybuffer"; // Required to receive binary
 
+ws.onopen = () => console.log("✅ Connected to server");
+
+ws.onmessage = (msg) => {
+    if (typeof msg.data === "string") {
+        console.log("📥 JSON:", msg.data);
+        // Handle control messages (optional)
+    } else if (msg.data instanceof ArrayBuffer) {
+        const blob = new Blob([msg.data], { type: "image/jpeg" }); // or image/png if your ESP sends PNG
+        const url = URL.createObjectURL(blob);
+
+        const img = document.getElementById("cameraImage");
+        img.src = url;
+
+        // Free memory when loaded
+        img.onload = () => {
+            URL.revokeObjectURL(url);
+        };
+    }
+};
+
+// --- Controls ---
 const input = document.getElementById("inputBox");
 const checkbox = document.getElementById("randomMouseCheckbox");
 const pad = document.getElementById("touchpad");
