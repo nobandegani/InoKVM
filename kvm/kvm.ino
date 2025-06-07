@@ -43,7 +43,7 @@ void setup() {
 	wsUtils.setWifi("Inoland2", "wGfzTV053GM4V");
 	delay(delays);
 	//wsUtils.setWebsocket(true, "kvm.likenesslabs.com", 443);
-	wsUtils.setWebsocket(false, "66.94.114.177", 80);
+	wsUtils.setWebsocket(false, "66.94.114.177", 80, "board_token");
 	delay(delays);
 }
 

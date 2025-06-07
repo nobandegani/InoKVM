@@ -21,6 +21,8 @@ class WebsocketUtils {
     String server;
     uint16_t port;
 
+    String token;
+
     websockets::WebsocketsClient wsClient;
 
     KeyboardUtils* kUtils = nullptr;
@@ -50,7 +52,8 @@ class WebsocketUtils {
     void setWebsocket(
       bool InSsl, 
       String InServer, 
-      uint16_t InPort
+      uint16_t InPort,
+      String InToken
     );
 
     void loop();

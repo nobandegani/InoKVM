@@ -31,13 +31,15 @@ void WebsocketUtils::setWifi(
 void WebsocketUtils::setWebsocket(
   bool InSsl, 
   String InServer, 
-  uint16_t InPort
+  uint16_t InPort,
+  String InToken
 ){
   use_ssl = InSsl;
   server = InServer;
   port = InPort;
+  token = InToken;
 
-  String wsAdd = server + ":" + port;
+  String wsAdd = server + ":" + port + "/?token=" + token;
 	if (use_ssl){
     setCert();
     wsAdd = "wss://" + wsAdd;
