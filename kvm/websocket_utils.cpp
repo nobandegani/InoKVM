@@ -1,31 +1,23 @@
 #include "websocket_utils.h"
 
-void WebsocketUtils::setup(
+
+void WebsocketUtils::setRef(
   KeyboardUtils& InkUtils,
   MouseUtils& InmUtils,
-  CameraUtils& IncUtils,
-  uint32_t InDelays, 
-  String InSsid, 
-  String InPass, 
-  bool InSsl, 
-  String InServer, 
-  uint16_t InPort,
-  unsigned int InCameraInterval
-  )
-  {
+  CameraUtils& IncUtils
+){
   kUtils = &InkUtils;
   mUtils = &InmUtils;
   cUtils = &IncUtils;
-  delays = InDelays;
+}
+
+void WebsocketUtils::setWifi(
+  String InSsid, 
+  String InPass
+){
   ssid_Router = InSsid;
   password_Router = InPass;
-  use_ssl = InSsl;
-  server = InServer;
-  port = InPort;
-  cameraInterval = InCameraInterval;
-  
-  
-  // --------------- wifi ---------------
+
 	Serial.println("Wifi start");
 	WiFi.begin(ssid_Router.c_str(), password_Router.c_str());
 	Serial.println(String("Connecting to ")+ssid_Router);
@@ -35,11 +27,26 @@ void WebsocketUtils::setup(
   }
 	Serial.println("\nWifi Connected, IP address: ");
   Serial.println(WiFi.localIP());
-	delay(delays);
+}
+void WebsocketUtils::setWebsocket(
+  bool InSsl, 
+  String InServer, 
+  uint16_t InPort
+){
+  use_ssl = InSsl;
+  server = InServer;
+  port = InPort;
 
-  // --------------- websocket ---------------
-	Serial.print("Connecting to WebSockets Server @ ");
-  Serial.println(server + ":" + port);
+  String wsAdd = server + ":" + port;
+	if (use_ssl){
+    setCert();
+    wsAdd = "wss://" + wsAdd;
+  }else{
+    wsAdd = "ws://" + wsAdd;
+  }
+
+  Serial.print("Connecting to WebSockets Server @ ");
+  Serial.println(wsAdd);
 
   wsClient.onMessage([this](websockets::WebsocketsMessage msg){
     this->onMessageCallback(msg);
@@ -48,27 +55,31 @@ void WebsocketUtils::setup(
       this->onEventsCallback(event, data);
   });
 
-
-	if (use_ssl){
-    wsClient.connect(server + ":" + port);
-  }else{
-    wsClient.connect(server + ":" + port);
-  }
+  wsClient.connect(wsAdd);
 
 	Serial.print("Connected to WebSockets Server @ ");
-  Serial.println(server + ":" + port);
+  Serial.println(wsAdd);
+}
+
+
+void  WebsocketUtils::setConf(
+  uint32_t InDelay,
+  unsigned int InCameraInterval
+){
+  delays = InDelay;
+  cameraInterval = InCameraInterval;
 }
 
 void WebsocketUtils::loop(){
   update();
 
   if (cameraInterval == 0){
-    SendCameraFeed();
+    //SendCameraFeed();
   }else{
     unsigned long now = millis();
     if (now - lastCameraSendTime >= cameraInterval) {
       lastCameraSendTime = now;
-      SendCameraFeed();
+      //SendCameraFeed();
     }
   }
 }
@@ -174,4 +185,39 @@ void WebsocketUtils::solve_json_command(String payload){
 
 		kUtils->releaseAll(50);
 	}
+}
+
+void WebsocketUtils::setCert(){
+  const char ssl_ca_cert[] PROGMEM = \
+    "-----BEGIN CERTIFICATE-----\n" \
+    "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\n" \
+    "-----END CERTIFICATE-----\n";
+
+  wsClient.setCACert(ssl_ca_cert);
 }

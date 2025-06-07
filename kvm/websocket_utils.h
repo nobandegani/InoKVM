@@ -31,17 +31,26 @@ class WebsocketUtils {
     unsigned int cameraInterval = 1000;
   
   public:
-    void setup(
+    void setConf(
+      uint32_t InDelay = 1000,
+      unsigned int InCameraInterval = 50
+    );
+
+    void setRef(
       KeyboardUtils& InkUtils,
       MouseUtils& InmUtils,
-      CameraUtils& IncUtils,
-      uint32_t InDelays, 
+      CameraUtils& IncUtils
+    );
+
+    void setWifi(
       String InSsid, 
-      String InPass, 
+      String InPass
+    );
+
+    void setWebsocket(
       bool InSsl, 
       String InServer, 
-      uint16_t InPort,
-      unsigned int InCameraInterval
+      uint16_t InPort
     );
 
     void loop();
@@ -54,6 +63,8 @@ class WebsocketUtils {
     void solve_json_command(String payload);
 
     void SendCameraFeed();
+
+    void setCert();
 };
 
 

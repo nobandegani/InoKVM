@@ -38,7 +38,12 @@ void setup() {
   delay(delays);
 
 	// --------------- websocket utils ---------------
-	wsUtils.setup(kUtils, mUtils, cUtils, 1000, "Inoland2", "wGfzTV053GM4V", false, "ws://66.94.114.177", 80, 0);
+	wsUtils.setConf(1000, 50);
+	wsUtils.setRef(kUtils, mUtils, cUtils);
+	wsUtils.setWifi("Inoland2", "wGfzTV053GM4V");
+	delay(delays);
+	//wsUtils.setWebsocket(true, "kvm.likenesslabs.com", 443);
+	wsUtils.setWebsocket(false, "66.94.114.177", 80);
 	delay(delays);
 }
 
