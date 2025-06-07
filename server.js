@@ -13,38 +13,35 @@ app.use(express.static(path.join(__dirname, "public")));
 wss.on("connection", (ws) => {
     console.log("Client connected");
 
-    ws.on("message", (raw) => {
-        console.log("Raw:", raw);
-        const data = raw.toString();
-        console.log("Data:", data);
+    ws.on("message", (raw, isBinary) => {
+        if (isBinary) {
+            console.log("📸 Received binary data, size:", raw.length);
+            // Forward binary frame to all other clients
+            wss.clients.forEach((client) => {
+                if (client !== ws && client.readyState === WebSocket.OPEN) {
+                    client.send(raw, { binary: true });
+                }
+            });
+            return;
+        }
 
-        // 🔍 Check if it's valid JSON
-        let isJSON = true;
+        const data = raw.toString();
+        console.log("📥 Data:", data);
+
         let parsed;
         try {
             parsed = JSON.parse(data);
-        } catch (err) {
-            isJSON = false;
-        }
+            console.log("✅ Valid JSON:", parsed);
 
-        if (isJSON) {
-            console.log("✅ Valid JSON");
-            // You can access parsed.name, parsed.key, etc.
-        } else {
-            console.log("❌ Not a valid JSON");
-        }
-
-        // 🔁 Broadcast to other clients
-        wss.clients.forEach((client) => {
-            if (client !== ws && client.readyState === WebSocket.OPEN) {
-                if (isJSON) {
+            // Forward JSON to others
+            wss.clients.forEach((client) => {
+                if (client !== ws && client.readyState === WebSocket.OPEN) {
                     client.send(data);
-                }else{
-                    client.send(raw);
                 }
-
-            }
-        });
+            });
+        } catch (err) {
+            console.log("❌ Invalid JSON");
+        }
     });
 
     ws.on("close", () => {
