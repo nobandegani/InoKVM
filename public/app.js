@@ -1,27 +1,44 @@
-const protocol = location.protocol === "https:" ? "wss://" : "ws://";
-const ws = new WebSocket(protocol + location.host);
+let ws = null;
 
-ws.binaryType = "arraybuffer"; // Required to receive binary
-
-ws.onopen = () => console.log("✅ Connected to server");
-
-ws.onmessage = (msg) => {
-    if (typeof msg.data === "string") {
-        console.log("📥 JSON:", msg.data);
-        // Handle control messages (optional)
-    } else if (msg.data instanceof ArrayBuffer) {
-        const blob = new Blob([msg.data], { type: "image/jpeg" }); // or image/png if your ESP sends PNG
-        const url = URL.createObjectURL(blob);
-
-        const img = document.getElementById("cameraImage");
-        img.src = url;
-
-        // Free memory when loaded
-        img.onload = () => {
-            URL.revokeObjectURL(url);
-        };
+// --- Connect Button Logic ---
+document.getElementById("connectBtn").addEventListener("click", () => {
+    const token = document.getElementById("tokenInput").value.trim();
+    if (!token) {
+        alert("❗ Please enter a token");
+        return;
     }
-};
+
+    const protocol = location.protocol === "https:" ? "wss://" : "ws://";
+    const wsUrl = `${protocol}${location.host}?token=${encodeURIComponent(token)}`;
+    ws = new WebSocket(wsUrl);
+    ws.binaryType = "arraybuffer";
+
+    ws.onopen = () => {
+        console.log("✅ Connected to server");
+        document.getElementById("connectBtn").disabled = true;
+    };
+
+    ws.onmessage = (msg) => {
+        if (typeof msg.data === "string") {
+            console.log("📥 JSON:", msg.data);
+        } else if (msg.data instanceof ArrayBuffer) {
+            const blob = new Blob([msg.data], { type: "image/jpeg" }); // or image/png
+            const url = URL.createObjectURL(blob);
+            const img = document.getElementById("cameraImage");
+            img.src = url;
+            img.onload = () => URL.revokeObjectURL(url);
+        }
+    };
+
+    ws.onclose = () => {
+        console.log("🔌 Disconnected from server");
+        document.getElementById("connectBtn").disabled = false;
+    };
+
+    ws.onerror = (err) => {
+        console.error("❌ WebSocket error:", err);
+    };
+});
 
 // --- Controls ---
 const input = document.getElementById("inputBox");
@@ -31,8 +48,7 @@ const sensitivityInput = document.getElementById("sensitivity");
 
 input.addEventListener("keyup", (e) => {
     e.preventDefault();
-
-    if (ws.readyState === WebSocket.OPEN) {
+    if (ws && ws.readyState === WebSocket.OPEN) {
         let keys = [];
         if (e.ctrlKey) keys.push("CONTROL");
         if (e.altKey) keys.push("ALT");
@@ -51,7 +67,7 @@ input.addEventListener("keyup", (e) => {
 });
 
 checkbox.addEventListener("change", () => {
-    if (ws.readyState === WebSocket.OPEN) {
+    if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ random_mouse: checkbox.checked }));
     }
 });
@@ -72,7 +88,7 @@ pad.addEventListener("pointerup", () => {
 });
 
 pad.addEventListener("pointermove", (e) => {
-    if (!mouseDown) return;
+    if (!mouseDown || !ws || ws.readyState !== WebSocket.OPEN) return;
 
     const sensitivity = parseFloat(sensitivityInput.value) || 1;
     const dx = (e.clientX - lastX) * sensitivity;
@@ -82,13 +98,11 @@ pad.addEventListener("pointermove", (e) => {
     lastY = e.clientY;
 
     if (Math.abs(dx) > 0 || Math.abs(dy) > 0) {
-        if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({
-                mouse: {
-                    dx: Math.round(dx),
-                    dy: Math.round(dy)
-                }
-            }));
-        }
+        ws.send(JSON.stringify({
+            mouse: {
+                dx: Math.round(dx),
+                dy: Math.round(dy)
+            }
+        }));
     }
 });
