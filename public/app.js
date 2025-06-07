@@ -42,7 +42,8 @@ document.getElementById("connectBtn").addEventListener("click", () => {
 
 // --- Controls ---
 const input = document.getElementById("inputBox");
-const checkbox = document.getElementById("randomMouseCheckbox");
+const CameraFeedCheckbox = document.getElementById("CameraFeedCheckbox");
+const randomMouseCheckbox = document.getElementById("randomMouseCheckbox");
 const pad = document.getElementById("touchpad");
 const sensitivityInput = document.getElementById("sensitivity");
 
@@ -66,9 +67,15 @@ input.addEventListener("keyup", (e) => {
     }
 });
 
-checkbox.addEventListener("change", () => {
+CameraFeedCheckbox.addEventListener("change", () => {
     if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ random_mouse: checkbox.checked }));
+        ws.send(JSON.stringify({ camera_active: CameraFeedCheckbox.checked }));
+    }
+});
+
+randomMouseCheckbox.addEventListener("change", () => {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ random_mouse: randomMouseCheckbox.checked }));
     }
 });
 
