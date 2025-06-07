@@ -72,6 +72,7 @@ int CameraUtils::cameraSetup(void) {
   // if PSRAM IC present, init with UXGA resolution and higher JPEG quality
   // for larger pre-allocated frame buffer.
   if(psramFound()){
+    Serial.println("Camera psram available, increasing the quality");
     config.jpeg_quality = 10;
     config.fb_count = 2;
     config.grab_mode = CAMERA_GRAB_LATEST;

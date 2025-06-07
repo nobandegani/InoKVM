@@ -62,10 +62,14 @@ void WebsocketUtils::setup(
 void WebsocketUtils::loop(){
   update();
 
-  unsigned long now = millis();
-  if (now - lastCameraSendTime >= cameraInterval) {
-    lastCameraSendTime = now;
+  if (cameraInterval == 0){
     SendCameraFeed();
+  }else{
+    unsigned long now = millis();
+    if (now - lastCameraSendTime >= cameraInterval) {
+      lastCameraSendTime = now;
+      SendCameraFeed();
+    }
   }
 }
 
@@ -76,8 +80,10 @@ void WebsocketUtils::SendCameraFeed(){
     float sizeInKB = sizeInBytes / 1024.0;
 
     Serial.print("Frame size: ");
-    Serial.print(sizeInKB, 2); // print with 2 decimal points
+    Serial.print(sizeInKB, 2);
     Serial.println(" KB");
+
+    wsClient.sendBinary((const char*)fb->buf, fb->len);
   }
   cUtils->releaseCamera(fb);
 }

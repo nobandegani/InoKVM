@@ -38,7 +38,7 @@ void setup() {
   delay(delays);
 
 	// --------------- websocket utils ---------------
-	wsUtils.setup(kUtils, mUtils, cUtils, 1000, "Inoland2", "wGfzTV053GM4V", false, "ws://66.94.114.177", 80, 5000);
+	wsUtils.setup(kUtils, mUtils, cUtils, 1000, "Inoland2", "wGfzTV053GM4V", false, "ws://66.94.114.177", 80, 0);
 	delay(delays);
 }
 
