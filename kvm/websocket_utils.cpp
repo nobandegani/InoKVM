@@ -3,22 +3,26 @@
 void WebsocketUtils::setup(
   KeyboardUtils& InkUtils,
   MouseUtils& InmUtils,
+  CameraUtils& IncUtils,
   uint32_t InDelays, 
   String InSsid, 
   String InPass, 
   bool InSsl, 
   String InServer, 
-  uint16_t InPort
+  uint16_t InPort,
+  unsigned int InCameraInterval
   )
   {
   kUtils = &InkUtils;
   mUtils = &InmUtils;
+  cUtils = &IncUtils;
   delays = InDelays;
   ssid_Router = InSsid;
   password_Router = InPass;
   use_ssl = InSsl;
   server = InServer;
   port = InPort;
+  cameraInterval = InCameraInterval;
   
   
   // --------------- wifi ---------------
@@ -56,6 +60,30 @@ void WebsocketUtils::setup(
 }
 
 void WebsocketUtils::loop(){
+  update();
+
+  unsigned long now = millis();
+  if (now - lastCameraSendTime >= cameraInterval) {
+    lastCameraSendTime = now;
+    SendCameraFeed();
+  }
+}
+
+void WebsocketUtils::SendCameraFeed(){
+  camera_fb_t * fb = cUtils->capture();
+  if (fb) {
+    size_t sizeInBytes = fb->len;
+    float sizeInKB = sizeInBytes / 1024.0;
+
+    Serial.print("Frame size: ");
+    Serial.print(sizeInKB, 2); // print with 2 decimal points
+    Serial.println(" KB");
+  }
+  cUtils->releaseCamera(fb);
+}
+
+void WebsocketUtils::update(){
+  //Serial.println("WS update");
   wsClient.poll();
 }
 

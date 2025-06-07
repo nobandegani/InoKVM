@@ -1,9 +1,44 @@
 #include "camera_utils.h"
 
-void CameraUtils::setup(){
+/*
+typedef struct {
+    uint8_t * buf;              < Pointer to the pixel data 
+    size_t len;                 < Length of the buffer in bytes 
+    size_t width;               < Width of the buffer in pixels 
+    size_t height;              < Height of the buffer in pixels 
+    pixformat_t format;         < Format of the pixel data
+    struct timeval timestamp;   < Timestamp since boot of the first DMA buffer of the frame
+} camera_fb_t;
+*/
+
+void CameraUtils::setup(uint32_t InDelay){
+  delays = InDelay;
+
 	if (cameraSetup() != 1){
     Serial.println("Camera configuration failed!");
   }
+}
+
+void CameraUtils::loop(){
+  
+
+  //delay(delays);
+}
+
+camera_fb_t * CameraUtils::capture(){
+  camera_fb_t * fb = NULL;
+  fb = esp_camera_fb_get();
+  if (fb != NULL) {
+    Serial.println("Camera capture success.");
+    return fb;
+  }else {
+    Serial.println("Camera capture failed.");
+    return NULL;
+  }
+}
+
+void CameraUtils::releaseCamera(camera_fb_t * fb){
+  esp_camera_fb_return(fb);
 }
 
 int CameraUtils::cameraSetup(void) {

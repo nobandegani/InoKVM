@@ -28,7 +28,7 @@ void setup() {
 	mUtils.setup();
 	delay(delays);
 
-	// --------------- mouse utils ---------------
+	// --------------- camera utils ---------------
 	cUtils.setup();
 	delay(delays);
 
@@ -38,7 +38,7 @@ void setup() {
   delay(delays);
 
 	// --------------- websocket utils ---------------
-	wsUtils.setup(kUtils, mUtils, 1000, "Inoland2", "wGfzTV053GM4V", false, "ws://66.94.114.177", 80);
+	wsUtils.setup(kUtils, mUtils, cUtils, 1000, "Inoland2", "wGfzTV053GM4V", false, "ws://66.94.114.177", 80, 5000);
 	delay(delays);
 }
 

@@ -10,8 +10,16 @@
 
 class CameraUtils {
   public:
-    void setup();
+    uint32_t delays;
 
+    void setup(uint32_t InDelay = 2000);
+
+    void loop();
+
+    camera_fb_t * capture();
+    void releaseCamera(camera_fb_t * fb);
+    
   private:
     int cameraSetup(void);
+    
 };
