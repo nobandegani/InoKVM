@@ -27,9 +27,10 @@ class WebsocketUtils {
 
     KeyboardUtils* kUtils = nullptr;
     MouseUtils* mUtils = nullptr;
-    CameraUtils* cUtils = nullptr;
+    
 
-    unsigned long lastCameraSendTime = 0;
+    TaskHandle_t cameraTaskHandle = NULL;
+    CameraUtils* cUtils = nullptr;
 
     bool cameraActive = false;
     unsigned int cameraInterval = 1000;
@@ -60,7 +61,6 @@ class WebsocketUtils {
     );
 
     void loop();
-    void update();
 
     void onMessageCallback(websockets::WebsocketsMessage message);
     void onEventsCallback(websockets::WebsocketsEvent event, String data);
@@ -70,6 +70,7 @@ class WebsocketUtils {
   private:
     void solve_json_command(String payload);
 
+    static void SendCameraFeedTask(void *param);
     void SendCameraFeed();
 
     void setCert();

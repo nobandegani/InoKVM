@@ -9,6 +9,16 @@ void WebsocketUtils::setRef(
   kUtils = &InkUtils;
   mUtils = &InmUtils;
   cUtils = &IncUtils;
+
+  xTaskCreatePinnedToCore(
+    SendCameraFeedTask,   // task function
+    "CameraFeed",         // name
+    8192,                 // stack size
+    this,                 // param
+    1,                    // priority
+    &cameraTaskHandle,    // handle
+    1                     // core 1 (ESP32 has 2 cores)
+  );
 }
 
 void WebsocketUtils::setWifi(
@@ -63,7 +73,6 @@ void WebsocketUtils::setWebsocket(
   Serial.println(wsAdd);
 }
 
-
 void  WebsocketUtils::setConf(
   uint32_t InDelay,
   unsigned int InCameraInterval
@@ -73,17 +82,17 @@ void  WebsocketUtils::setConf(
 }
 
 void WebsocketUtils::loop(){
-  update();
+  wsClient.poll();
+}
 
-  if (cameraActive){
-    if (cameraInterval == 0){
-      SendCameraFeed();
-    }else{
-      unsigned long now = millis();
-      if (now - lastCameraSendTime >= cameraInterval) {
-        lastCameraSendTime = now;
-        SendCameraFeed();
-      }
+void WebsocketUtils::SendCameraFeedTask(void *param) {
+  WebsocketUtils* self = static_cast<WebsocketUtils*>(param);
+  while (true) {
+    if (self->cameraActive){
+      self->SendCameraFeed();
+    }
+    if (self->cameraInterval != 0){
+      vTaskDelay(self->cameraInterval / portTICK_PERIOD_MS);
     }
   }
 }
@@ -107,14 +116,9 @@ void WebsocketUtils::SendCameraFeed(){
     Serial.print(sizeInKB, 2);
     Serial.println(" KB");
 
-    //wsClient.sendBinary((const char*)fb->buf, fb->len);
+    wsClient.sendBinary((const char*)fb->buf, fb->len);
     cUtils->releaseCamera(fb);
   }
-}
-
-void WebsocketUtils::update(){
-  //Serial.println("WS update");
-  wsClient.poll();
 }
 
 void WebsocketUtils::onMessageCallback(websockets::WebsocketsMessage message) {
