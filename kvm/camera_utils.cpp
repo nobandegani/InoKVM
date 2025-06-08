@@ -27,7 +27,6 @@ camera_fb_t * CameraUtils::capture(){
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();
   if (fb != NULL) {
-    Serial.println("Camera capture success.");
     return fb;
   }else {
     Serial.println("Camera capture failed.");
@@ -68,7 +67,7 @@ int CameraUtils::cameraSetup(void) {
     config.grab_mode = CAMERA_GRAB_LATEST;
     config.fb_location = CAMERA_FB_IN_PSRAM;
     config.jpeg_quality = 10;
-    config.fb_count = 10;
+    config.fb_count = 5;
   }else{
     Serial.println("Camera psram not available, decreasing the quality");
     config.frame_size = FRAMESIZE_HD; //FRAMESIZE_SVGA

@@ -10,15 +10,32 @@ void WebsocketUtils::setRef(
   mUtils = &InmUtils;
   cUtils = &IncUtils;
 
+  cameraQueue = xQueueCreate(5, sizeof(camera_fb_t*));
+
   xTaskCreatePinnedToCore(
-    SendCameraFeedTask,   // task function
-    "CameraFeed",         // name
+    cameraCaptureTask,   // task function
+    "CameraCapture",         // name
     8192,                 // stack size
     this,                 // param
     1,                    // priority
-    &cameraTaskHandle,    // handle
+    &cameraCaptureHandle,    // handle
     1                     // core 1 (ESP32 has 2 cores)
   );
+
+  xTaskCreatePinnedToCore(
+    cameraSendTask,   // task function
+    "CameraSend",         // name
+    8192,                 // stack size
+    this,                 // param
+    1,                    // priority
+    &cameraSendHandle,    // handle
+    1                     // core 1 (ESP32 has 2 cores)
+  );
+
+  dummyData.resize(5 * 1024);
+  for (size_t i = 0; i < dummyData.size(); ++i) {
+      dummyData[i] = i % 256;
+  }
 }
 
 void WebsocketUtils::setWifi(
@@ -85,11 +102,12 @@ void WebsocketUtils::loop(){
   wsClient.poll();
 }
 
-void WebsocketUtils::SendCameraFeedTask(void *param) {
+void WebsocketUtils::cameraCaptureTask(void *param) {
   WebsocketUtils* self = static_cast<WebsocketUtils*>(param);
+  
   while (true) {
     if (self->cameraActive){
-      self->SendCameraFeed();
+      self->cameraCapture();
     }
     if (self->cameraInterval != 0){
       vTaskDelay(self->cameraInterval / portTICK_PERIOD_MS);
@@ -97,29 +115,60 @@ void WebsocketUtils::SendCameraFeedTask(void *param) {
   }
 }
 
-void WebsocketUtils::SendCameraFeed(){
-  unsigned long now = millis();
-  unsigned long delta = now - cameralastCallTime;
-  cameralastCallTime = now;
-
-  Serial.print("⏱ FPS: ");
-  Serial.println(1000.0 / delta);
-
-  //printMemoryUsage();
-
+void WebsocketUtils::cameraCapture(){
   camera_fb_t * fb = cUtils->capture();
   if (fb) {
+    if (xQueueSend(cameraQueue, &fb, 0)) {
+      unsigned long now = millis();
+      unsigned long delta = now - cameraCaptureTime;
+      cameraCaptureTime = now;
+
+      Serial.print("Camera capture success:");
+      Serial.print(delta);
+      Serial.println(" ms");
+      //printMemoryUsage();
+    }else{
+      cUtils->releaseCamera(fb);
+      Serial.println("❌ Camera capture fail, queue full");
+    }
+  }
+}
+
+void WebsocketUtils::cameraSendTask(void *param) {
+  WebsocketUtils* self = static_cast<WebsocketUtils*>(param);
+  
+  while (true) {
+    if (self->cameraActive){
+      self->cameraSend();
+    }
+    if (self->cameraInterval != 0){
+      vTaskDelay(self->cameraInterval / portTICK_PERIOD_MS);
+    }
+  }
+}
+
+void WebsocketUtils::cameraSend(){
+  camera_fb_t *fb = nullptr;
+  if (xQueueReceive(cameraQueue, &fb, portMAX_DELAY)) {
+    unsigned long now = millis();
+    unsigned long delta = now - cameraSendTime;
+    cameraSendTime = now;
+
     size_t sizeInBytes = fb->len;
     float sizeInKB = sizeInBytes / 1024.0;
 
-    Serial.print("Frame size: ");
+    Serial.print("Camera send success:");
+    Serial.print(delta);
+    Serial.print("ms, size:");
     Serial.print(sizeInKB, 2);
     Serial.println(" KB");
-
     wsClient.sendBinary((const char*)fb->buf, fb->len);
     cUtils->releaseCamera(fb);
+  }else{
+    Serial.println("❌ Camera send failed, queue recieve failed");
   }
 }
+
 
 void WebsocketUtils::onMessageCallback(websockets::WebsocketsMessage message) {
     if (message.isEmpty()){

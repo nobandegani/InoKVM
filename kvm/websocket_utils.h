@@ -28,13 +28,18 @@ class WebsocketUtils {
     KeyboardUtils* kUtils = nullptr;
     MouseUtils* mUtils = nullptr;
     
-
-    TaskHandle_t cameraTaskHandle = NULL;
+    QueueHandle_t cameraQueue = NULL;
+    TaskHandle_t cameraCaptureHandle = NULL;
+    TaskHandle_t cameraSendHandle = NULL;
+    
     CameraUtils* cUtils = nullptr;
 
     bool cameraActive = false;
     unsigned int cameraInterval = 1000;
-    unsigned long cameralastCallTime = 0;
+    unsigned long cameraCaptureTime = 0;
+    unsigned long cameraSendTime = 0;
+
+    std::vector<uint8_t> dummyData;
   
   public:
     void setConf(
@@ -70,8 +75,12 @@ class WebsocketUtils {
   private:
     void solve_json_command(String payload);
 
-    static void SendCameraFeedTask(void *param);
-    void SendCameraFeed();
+    static void cameraCaptureTask(void *param);
+    void cameraCapture();
+
+    static void cameraSendTask(void *param);
+    void cameraSend();
+    
 
     void setCert();
 };
