@@ -162,7 +162,7 @@ void WebsocketUtils::cameraSend(){
     Serial.print("ms, size:");
     Serial.print(sizeInKB, 2);
     Serial.println(" KB");
-    wsClient.sendBinary((const char*)fb->buf, fb->len);
+    //wsClient.sendBinary((const char*)fb->buf, fb->len);
     cUtils->releaseCamera(fb);
   }else{
     Serial.println("❌ Camera send failed, queue recieve failed");
