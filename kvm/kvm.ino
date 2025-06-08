@@ -47,10 +47,34 @@ void setup() {
 	delay(delays);
 }
 
+unsigned long lastPrint = 0;
+unsigned int memStatInterval = 5000;
+
 void loop() { 
 	wsUtils.loop();
 	mUtils.loop();
+
+	unsigned long now = millis();
+    if (now - lastPrint >= memStatInterval) {
+        printMemoryUsage();
+        lastPrint = now;
+    }
 }
 
+void printMemoryUsage() {
+    // SRAM (internal)
+    size_t free_heap = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
+    size_t total_heap = heap_caps_get_total_size(MALLOC_CAP_INTERNAL);
+    size_t used_heap = total_heap - free_heap;
 
+    // PSRAM (external)
+    size_t free_psram = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
+    size_t total_psram = heap_caps_get_total_size(MALLOC_CAP_SPIRAM);
+    size_t used_psram = total_psram - free_psram;
+
+    Serial.println("====== Memory Stats ======");
+    Serial.printf("SRAM  Total: %d KB | Used: %d KB | Free: %d KB\n", total_heap / 1024, used_heap / 1024, free_heap / 1024);
+    Serial.printf("PSRAM Total: %d KB | Used: %d KB | Free: %d KB\n", total_psram / 1024, used_psram / 1024, free_psram / 1024);
+    Serial.println("===========================");
+}
 
