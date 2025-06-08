@@ -29,6 +29,7 @@ class WebsocketUtils {
     MouseUtils* mUtils = nullptr;
     
     QueueHandle_t cameraQueue = NULL;
+    int cameraQueueSize = 2;
     TaskHandle_t cameraCaptureHandle = NULL;
     TaskHandle_t cameraSendHandle = NULL;
     

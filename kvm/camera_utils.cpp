@@ -63,14 +63,14 @@ int CameraUtils::cameraSetup(void) {
   
   if(psramFound()){
     Serial.println("Camera psram available, increasing the quality");
-    config.frame_size = FRAMESIZE_HD; //FRAMESIZE_HD FRAMESIZE_SXGA FRAMESIZE_UXGA
+    config.frame_size = FRAMESIZE_VGA; //FRAMESIZE_HD FRAMESIZE_SXGA FRAMESIZE_UXGA
     config.grab_mode = CAMERA_GRAB_LATEST;
     config.fb_location = CAMERA_FB_IN_PSRAM;
-    config.jpeg_quality = 10;
+    config.jpeg_quality = 20;
     config.fb_count = 5;
   }else{
     Serial.println("Camera psram not available, decreasing the quality");
-    config.frame_size = FRAMESIZE_HD; //FRAMESIZE_SVGA
+    config.frame_size = FRAMESIZE_VGA; //FRAMESIZE_VGA FRAMESIZE_SVGA FRAMESIZE_HD
     config.grab_mode = CAMERA_GRAB_WHEN_EMPTY;
     config.fb_location = CAMERA_FB_IN_DRAM;
     config.jpeg_quality = 20;

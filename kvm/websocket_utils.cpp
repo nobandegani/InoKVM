@@ -10,7 +10,7 @@ void WebsocketUtils::setRef(
   mUtils = &InmUtils;
   cUtils = &IncUtils;
 
-  cameraQueue = xQueueCreate(5, sizeof(camera_fb_t*));
+  cameraQueue = xQueueCreate(cameraQueueSize, sizeof(camera_fb_t*));
 
   xTaskCreatePinnedToCore(
     cameraCaptureTask,   // task function
