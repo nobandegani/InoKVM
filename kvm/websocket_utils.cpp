@@ -89,6 +89,15 @@ void WebsocketUtils::loop(){
 }
 
 void WebsocketUtils::SendCameraFeed(){
+  unsigned long now = millis();
+  unsigned long delta = now - cameralastCallTime;
+  cameralastCallTime = now;
+
+  Serial.print("⏱ FPS: ");
+  Serial.println(1000.0 / delta);
+
+  //printMemoryUsage();
+
   camera_fb_t * fb = cUtils->capture();
   if (fb) {
     size_t sizeInBytes = fb->len;
@@ -98,9 +107,9 @@ void WebsocketUtils::SendCameraFeed(){
     Serial.print(sizeInKB, 2);
     Serial.println(" KB");
 
-    wsClient.sendBinary((const char*)fb->buf, fb->len);
+    //wsClient.sendBinary((const char*)fb->buf, fb->len);
+    cUtils->releaseCamera(fb);
   }
-  cUtils->releaseCamera(fb);
 }
 
 void WebsocketUtils::update(){
@@ -232,4 +241,21 @@ void WebsocketUtils::setCert(){
     "-----END CERTIFICATE-----\n";
 
   wsClient.setCACert(ssl_ca_cert);
+}
+
+void WebsocketUtils::printMemoryUsage() {
+    // SRAM (internal)
+    size_t free_heap = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
+    size_t total_heap = heap_caps_get_total_size(MALLOC_CAP_INTERNAL);
+    size_t used_heap = total_heap - free_heap;
+
+    // PSRAM (external)
+    size_t free_psram = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
+    size_t total_psram = heap_caps_get_total_size(MALLOC_CAP_SPIRAM);
+    size_t used_psram = total_psram - free_psram;
+
+    Serial.println("====== Memory Stats ======");
+    Serial.printf("SRAM  Total: %d KB | Used: %d KB | Free: %d KB\n", total_heap / 1024, used_heap / 1024, free_heap / 1024);
+    Serial.printf("PSRAM Total: %d KB | Used: %d KB | Free: %d KB\n", total_psram / 1024, used_psram / 1024, free_psram / 1024);
+    Serial.println("===========================");
 }

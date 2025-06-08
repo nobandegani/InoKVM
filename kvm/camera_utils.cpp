@@ -60,24 +60,22 @@ int CameraUtils::cameraSetup(void) {
   config.pin_pwdn = PWDN_GPIO_NUM;
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 10000000;
-  config.frame_size = FRAMESIZE_UXGA; //FRAMESIZE_SVGA
   config.pixel_format = PIXFORMAT_JPEG; // for streaming
-  config.grab_mode = CAMERA_GRAB_WHEN_EMPTY;
-  config.fb_location = CAMERA_FB_IN_PSRAM;
-  config.jpeg_quality = 12;
-  config.fb_count = 1;
   
-  // if PSRAM IC present, init with UXGA resolution and higher JPEG quality
-  // for larger pre-allocated frame buffer.
   if(psramFound()){
     Serial.println("Camera psram available, increasing the quality");
-    config.jpeg_quality = 10;
-    config.fb_count = 2;
+    config.frame_size = FRAMESIZE_UXGA; //FRAMESIZE_HD FRAMESIZE_SXGA FRAMESIZE_UXGA
     config.grab_mode = CAMERA_GRAB_LATEST;
-  } else {
-    // Limit the frame size when PSRAM is not available
-    config.frame_size = FRAMESIZE_SVGA;
+    config.fb_location = CAMERA_FB_IN_PSRAM;
+    config.jpeg_quality = 15;
+    config.fb_count = 10;
+  }else{
+    Serial.println("Camera psram not available, decreasing the quality");
+    config.frame_size = FRAMESIZE_HD; //FRAMESIZE_SVGA
+    config.grab_mode = CAMERA_GRAB_WHEN_EMPTY;
     config.fb_location = CAMERA_FB_IN_DRAM;
+    config.jpeg_quality = 8;
+    config.fb_count = 1;
   }
 
   // camera init

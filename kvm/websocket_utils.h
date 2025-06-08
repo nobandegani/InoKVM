@@ -33,6 +33,7 @@ class WebsocketUtils {
 
     bool cameraActive = false;
     unsigned int cameraInterval = 1000;
+    unsigned long cameralastCallTime = 0;
   
   public:
     void setConf(
@@ -63,6 +64,8 @@ class WebsocketUtils {
 
     void onMessageCallback(websockets::WebsocketsMessage message);
     void onEventsCallback(websockets::WebsocketsEvent event, String data);
+
+    void printMemoryUsage();
 
   private:
     void solve_json_command(String payload);
