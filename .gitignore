@@ -1,3 +1,6 @@
 .idea
 node_modules
 package-lock.json
+esp-idf/build
+esp-idf/.devcontainer
+esp-idf/.vscode
