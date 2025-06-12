@@ -11,12 +11,32 @@ void MouseUtils::loop(){
 	}
 }
 
-void MouseUtils::move(int8_t InX, int8_t InY) { 
-	Serial.print("Mouse moved: ");
-	Serial.print(InX);
-	Serial.print(",");
-	Serial.println(InY);
-	Mouse.move(InX, InY);
+void MouseUtils::move(int InX, int InY) {
+    Serial.print("Mouse move requested: ");
+    Serial.print(InX);
+    Serial.print(",");
+    Serial.println(InY);
+
+    while (InX != 0 || InY != 0) {
+        int8_t stepX = 0;
+        int8_t stepY = 0;
+
+        if (InX > 127)      { stepX = 127;  InX -= 127; }
+        else if (InX < -127){ stepX = -127; InX += 127; }
+        else                { stepX = InX;  InX = 0;    }
+
+        if (InY > 127)      { stepY = 127;  InY -= 127; }
+        else if (InY < -127){ stepY = -127; InY += 127; }
+        else                { stepY = InY;  InY = 0;    }
+
+        Serial.print("Mouse moved: ");
+        Serial.print(stepX);
+        Serial.print(",");
+        Serial.println(stepY);
+
+        Mouse.move(stepX, stepY);
+        delay(1);  // small delay to avoid buffer issues
+    }
 }
 
 void MouseUtils::move2(int8_t InX, int8_t InY) { 
