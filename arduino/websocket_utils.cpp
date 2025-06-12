@@ -236,6 +236,14 @@ void WebsocketUtils::solve_json_command(String payload){
     mUtils->move(dx, dy);
   }
 
+  j_key = "mouse_click";
+	if (payload_json.hasOwnProperty(j_key)) {
+		String j_return = (String) payload_json[j_key];
+		Serial.print("Json is mouse_click:");
+		Serial.println(j_return);
+    mUtils->mouse_click(j_return);
+  }
+
 	j_key = "keys";
 	if (payload_json.hasOwnProperty(j_key)) {
 		JSONVar keys = payload_json[j_key]; 

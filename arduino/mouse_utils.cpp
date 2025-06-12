@@ -69,6 +69,31 @@ void MouseUtils::move2(int8_t InX, int8_t InY) {
 	return;
 }
 
+/*
+#define MOUSE_LEFT     0x01
+#define MOUSE_RIGHT    0x02
+#define MOUSE_MIDDLE   0x04
+#define MOUSE_BACKWARD 0x08
+#define MOUSE_FORWARD  0x10
+#define MOUSE_ALL      0x1F
+*/
+void MouseUtils::mouse_click(String event){
+	if (event = "left"){
+		Mouse.click(MOUSE_LEFT);
+		return;
+	}
+	if (event = "right"){
+		Mouse.click(MOUSE_RIGHT);
+		return;
+	}
+	if (event = "double"){
+		Mouse.click(MOUSE_LEFT);
+		delay(40);
+		Mouse.click(MOUSE_LEFT);
+		return;
+	}
+}
+
 // --------------------------------------------- rand_mouse_move ---------------------------------------------
 void MouseUtils::rand_mouse_move() { 
 	// Delay between each mouse move... if we move on average 60 times

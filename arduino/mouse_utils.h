@@ -14,6 +14,8 @@ class MouseUtils {
     void move(int8_t InX, int8_t InY);
     void move2(int8_t InX, int8_t InY);
 
+    void mouse_click(String event);
+
     void loop();
 
   private:
