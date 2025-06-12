@@ -101,7 +101,9 @@ pad.addEventListener("pointerup", () => {
         const dy = Math.round(accumulatedDY);
 
         if (dx !== 0 || dy !== 0) {
-            ws.send(JSON.stringify({ mouse: { dx, dy } }));
+            let temp = JSON.stringify({ mouse: { dx, dy } });
+            console.log(temp);
+            ws.send(temp);
         }
     }
 
@@ -123,12 +125,14 @@ pad.addEventListener("pointermove", (e) => {
 
     if (Math.abs(dx) > 0 || Math.abs(dy) > 0) {
         if (smoothInputCheckbox.checked) {
-            ws.send(JSON.stringify({
+            let temp = JSON.stringify({
                 mouse: {
                     dx: Math.round(dx),
                     dy: Math.round(dy)
                 }
-            }));
+            });
+            console.log(temp);
+            ws.send(temp);
         }else{
             accumulatedDX += dx;
             accumulatedDY += dy;
