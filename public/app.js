@@ -113,3 +113,23 @@ pad.addEventListener("pointermove", (e) => {
         }));
     }
 });
+
+
+document.getElementById("leftClickBtn").addEventListener("click", () => {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ mouse_click: "left" }));
+    }
+});
+
+document.getElementById("rightClickBtn").addEventListener("click", () => {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ mouse_click: "right" }));
+    }
+});
+
+document.getElementById("doubleClickBtn").addEventListener("click", () => {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ mouse_click: "double" }));
+    }
+});
+

@@ -118,3 +118,22 @@ h1 {
     font-weight: bold;
     cursor: pointer;
 }
+
+.click-buttons {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.click-buttons button {
+    padding: 10px 16px;
+    background-color: #333;
+    color: #eee;
+    border: 1px solid #555;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.click-buttons button:hover {
+    background-color: #555;
+}
