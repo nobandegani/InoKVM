@@ -79,8 +79,13 @@ randomMouseCheckbox.addEventListener("change", () => {
     }
 });
 
-let lastX = null, lastY = null;
+let lastX = null;
+let lastY = null;
 let mouseDown = false;
+
+const smoothInputCheckbox = document.getElementById("smoothInputCheckbox");
+let accumulatedDX = 0;
+let accumulatedDY = 0;
 
 pad.addEventListener("pointerdown", (e) => {
     lastX = e.clientX;
@@ -90,6 +95,18 @@ pad.addEventListener("pointerdown", (e) => {
 
 pad.addEventListener("pointerup", () => {
     mouseDown = false;
+
+    if (!smoothInputCheckbox.checked && ws && ws.readyState === WebSocket.OPEN) {
+        const dx = Math.round(accumulatedDX);
+        const dy = Math.round(accumulatedDY);
+
+        if (dx !== 0 || dy !== 0) {
+            ws.send(JSON.stringify({ mouse: { dx, dy } }));
+        }
+    }
+
+    accumulatedDX = 0;
+    accumulatedDY = 0;
     lastX = null;
     lastY = null;
 });
@@ -105,15 +122,19 @@ pad.addEventListener("pointermove", (e) => {
     lastY = e.clientY;
 
     if (Math.abs(dx) > 0 || Math.abs(dy) > 0) {
-        ws.send(JSON.stringify({
-            mouse: {
-                dx: Math.round(dx),
-                dy: Math.round(dy)
-            }
-        }));
+        if (smoothInputCheckbox.checked) {
+            ws.send(JSON.stringify({
+                mouse: {
+                    dx: Math.round(dx),
+                    dy: Math.round(dy)
+                }
+            }));
+        }else{
+            accumulatedDX += dx;
+            accumulatedDY += dy;
+        }
     }
 });
-
 
 document.getElementById("leftClickBtn").addEventListener("click", () => {
     if (ws && ws.readyState === WebSocket.OPEN) {
