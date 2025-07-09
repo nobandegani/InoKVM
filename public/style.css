@@ -17,7 +17,7 @@ h1 {
 
 .camera-feed {
     width: 100%;
-    max-width: 100px;
+    max-width: 1000px;
     height: auto;
     background-color: #222;
     border: 2px dashed #444;
