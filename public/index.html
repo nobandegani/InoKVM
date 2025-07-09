@@ -10,53 +10,57 @@
 
 <h1>InoKVM</h1>
 
-<div class="camera-feed">
-    <img id="cameraImage" src="" alt="Camera Feed" />
-</div>
-
-<div class="main-container">
-    <div class="controls">
-        <h2>Connection:</h2>
-        <input type="text" id="tokenInput" placeholder="Enter access token..." value="web_token" />
-        <button id="connectBtn">Connect</button>
-
-        <h2>Camera:</h2>
-        <label>
-            <input type="checkbox" id="CameraFeedCheckbox" />
-            Enable Camera feed
-        </label>
-
-        <h2>Keyboard:</h2>
-        <input type="text" id="inputBox" placeholder="Type here..." autofocus />
-
-        <h2>Mouse:</h2>
-        <label>
-            <input type="checkbox" id="randomMouseCheckbox" />
-            Enable Random Mouse Movements
-        </label>
-
-        <label>
-            <input type="checkbox" id="smoothInputCheckbox" />
-            Smooth Input
-        </label>
-
-        <label>
-            Sensitivity:
-            <input type="number" id="sensitivity" value="1" step="0.1" min="0.1" />
-        </label>
+<div class="layout">
+    <div class="camera-feed">
+        <img id="cameraImage" src="" alt="Camera Feed" />
     </div>
 
-    <div class="touchpad-container">
-        <h2>Touchpad Area:</h2>
-        <div id="touchpad"></div>
-        <div class="click-buttons">
-            <button id="leftClickBtn">Left Click</button>
-            <button id="rightClickBtn">Right Click</button>
-            <button id="doubleClickBtn">Double Click</button>
+    <div class="main-container">
+        <div class="controls">
+            <h2>Connection:</h2>
+            <input type="text" id="tokenInput" placeholder="Enter access token..." value="web_token" />
+            <button id="connectBtn">Connect</button>
+
+            <h2>Camera:</h2>
+            <label>
+                <input type="checkbox" id="CameraFeedCheckbox" />
+                Enable Camera feed
+            </label>
+
+            <h2>Keyboard:</h2>
+            <input type="text" id="inputBox" placeholder="Type here..." autofocus />
+
+            <h2>Mouse:</h2>
+            <label>
+                <input type="checkbox" id="randomMouseCheckbox" />
+                Enable Random Mouse Movements
+            </label>
+
+            <label>
+                <input type="checkbox" id="smoothInputCheckbox" />
+                Smooth Input
+            </label>
+
+            <label>
+                Sensitivity:
+                <input type="number" id="sensitivity" value="1" step="0.1" min="0.1" />
+            </label>
+        </div>
+
+        <div class="touchpad-container">
+            <h2>Touchpad Area:</h2>
+            <div id="touchpad"></div>
+            <div class="click-buttons">
+                <button id="leftClickBtn">Left Click</button>
+                <button id="rightClickBtn">Right Click</button>
+                <button id="doubleClickBtn">Double Click</button>
+            </div>
         </div>
     </div>
 </div>
 
 <script src="app.js"></script>
+
 </body>
+
 </html>
