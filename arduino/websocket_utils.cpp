@@ -31,11 +31,6 @@ void WebsocketUtils::setRef(
     &cameraSendHandle,    // handle
     1                     // core 1 (ESP32 has 2 cores)
   );
-
-  dummyData.resize(5 * 1024);
-  for (size_t i = 0; i < dummyData.size(); ++i) {
-      dummyData[i] = i % 256;
-  }
 }
 
 void WebsocketUtils::setWifi(
@@ -162,7 +157,7 @@ void WebsocketUtils::cameraSend(){
     Serial.print("ms, size:");
     Serial.print(sizeInKB, 2);
     Serial.println(" KB");
-    //wsClient.sendBinary((const char*)fb->buf, fb->len);
+    wsClient.sendBinary((const char*)fb->buf, fb->len);
     cUtils->releaseCamera(fb);
   }else{
     Serial.println("❌ Camera send failed, queue recieve failed");

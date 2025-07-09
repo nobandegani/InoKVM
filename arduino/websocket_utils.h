@@ -40,8 +40,6 @@ class WebsocketUtils {
     unsigned long cameraCaptureTime = 0;
     unsigned long cameraSendTime = 0;
 
-    std::vector<uint8_t> dummyData;
-  
   public:
     void setConf(
       uint32_t InDelay = 1000,
