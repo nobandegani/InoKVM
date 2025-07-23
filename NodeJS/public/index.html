@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>InoKVM Client</title>
+    <style>
+        body {
+            background: #111;
+            color: #eee;
+            font-family: sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        img {
+            max-width: 100%;
+            border: 2px solid #444;
+            background: #000;
+        }
+    </style>
+</head>
+<body>
+<h1>Live Video Feed</h1>
+<img id="feed" alt="Waiting for video…" />
+
+<script>
+    const CLIENT_TOKEN = "CLIENT_TOKEN_HERE";           // ← replace
+    const SERVER_HOST  = "kvm.likenesslabs.dev";        // ← your host
+    const WS_SCHEME    = "wss";                         // or "ws" if not SSL
+    const WS_PORT      = 443;                           // omit if default for scheme
+
+    // build URI (port omitted if 80 for ws or 443 for wss)
+    const WS_URI = `${WS_SCHEME}://${SERVER_HOST}` +
+        `${_WS_PORT !== 80 && WS_PORT !== 443 ? ':'+WS_PORT : ''}` +
+        `/?token=${CLIENT_TOKEN}`;
+
+    const img = document.getElementById('feed');
+    let lastUrl;
+
+    const ws = new WebSocket(WS_URI);
+    ws.binaryType = 'arraybuffer';
+
+    ws.onopen = () => console.log("Connected to", WS_URI);
+    ws.onclose = () => console.log("Disconnected");
+    ws.onerror = e => console.error("WebSocket error", e);
+
+    ws.onmessage = ({ data }) => {
+        // clean up previous blob URL
+        if (lastUrl) URL.revokeObjectURL(lastUrl);
+
+        // create a new blob URL for this JPEG and set it as img src
+        const blob = new Blob([data], { type: 'image/jpeg' });
+        lastUrl = URL.createObjectURL(blob);
+        img.src = lastUrl;
+    };
+</script>
+</body>
+</html>
