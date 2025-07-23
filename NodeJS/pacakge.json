@@ -1,0 +1,14 @@
+{
+  "name": "ino-kvm-server",
+  "version": "1.0.0",
+  "description": "InoKVM",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
