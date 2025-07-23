@@ -31,9 +31,7 @@
     const WS_PORT      = 443;                           // omit if default for scheme
 
     // build URI (port omitted if 80 for ws or 443 for wss)
-    const WS_URI = `${WS_SCHEME}://${SERVER_HOST}` +
-        `${_WS_PORT !== 80 && WS_PORT !== 443 ? ':'+WS_PORT : ''}` +
-        `/?token=${CLIENT_TOKEN}`;
+    const WS_URI = `${WS_SCHEME}://${SERVER_HOST}` + ':' + WS_PORT + `/?token=${CLIENT_TOKEN}`;
 
     const img = document.getElementById('feed');
     let lastUrl;
